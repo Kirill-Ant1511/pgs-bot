@@ -53,23 +53,23 @@ def get_production_message(plot_id):
   machine, machine_and_production = get_unique_machine(reports)
   for key, value in machine.items():
     message += f"Буровая {key}\n"
-    message += f"За сутки: {get_last_drilling(value)}\n"
-    message += f"За месяц: {get_last_month_drilling(value)}\n"
-    message += f"С начала проекта: {get_all_drilling(value)}\n\n"
+    message += f"За сутки: {get_last_drilling(value)} м.\n"
+    message += f"За месяц: {get_last_month_drilling(value)} м.\n"
+    message += f"С начала проекта: {get_all_drilling(value)} м.\n\n"
 
   for key, value in machine_and_production.items():
     last_drill = get_last_drilling(value)
     if last_drill == 0:
       continue
     message += f"Буровая: {key} - ({value[0].get("plan").get("plot").get("name")}. Проектная глубина: {value[0].get("plan").get("volume")}м)\n"
-    message += f"За сутки: {last_drill}\n"
-    message += f"За месяц: {get_last_month_drilling(value)}\n"
-    message += f"С начала проекта: {get_all_drilling(value)}\n\n"
+    message += f"За сутки: {last_drill} м.\n"
+    message += f"За месяц: {get_last_month_drilling(value)} м.\n"
+    message += f"С начала проекта: {get_all_drilling(value)} м.\n\n"
 
   message += "Всего:\n"
-  message += f"За сутки: {get_last_drilling(reports)}\n"
-  message += f"За месяц: {get_last_month_drilling(reports)}\n"
-  message += f"С начала проекта: {get_all_drilling(reports)}\n\n"
+  message += f"За сутки: {get_last_drilling(reports)} м.\n"
+  message += f"За месяц: {get_last_month_drilling(reports)} м.\n"
+  message += f"С начала проекта: {get_all_drilling(reports)} м.\n\n"
 
   subtype_work = create_request(RequestType.GET.name, entity_url["subtype_work"] + '/by-name', param={
     "name": "Документация керна скважин"
@@ -81,9 +81,9 @@ def get_production_message(plot_id):
     })
 
     message += f"Документация керна:\n"
-    message  += f"За сутки: {get_last_drilling(reports)}\n"
-    message += f"За месяц: {get_last_month_drilling(reports)}\n"
-    message += f"С начала проекта: {get_all_drilling(reports)}\n\n"
+    message  += f"За сутки: {get_last_drilling(reports)} м.\n"
+    message += f"За месяц: {get_last_month_drilling(reports)} м.\n"
+    message += f"С начала проекта: {get_all_drilling(reports)} м.\n\n"
 
   subtype_work = create_request(RequestType.GET.name, entity_url["subtype_work"] + '/by-name', param={
       "name": "Распиловка керновых проб"
@@ -94,7 +94,7 @@ def get_production_message(plot_id):
         "subtypeWorkId": subtype_work.get("id"),
     })
     message += f"Распиловка керновых проб:\n"
-    message += f"С начала проекта: {get_all_drilling(reports)}\n"
+    message += f"С начала проекта: {get_all_drilling(reports)} м.\n"
 
   subtype_work = create_request(RequestType.GET.name, entity_url["subtype_work"] + '/by-name', param={
     "name": "Отбор керновых проб"
@@ -105,7 +105,7 @@ def get_production_message(plot_id):
       "subtypeWorkId": subtype_work.get("id"),
     })
     message += f"Отбор керновых проб:\n"
-    message += f"С начала проекта: {get_all_drilling(reports)}\n"
+    message += f"С начала проекта: {get_all_drilling(reports)} м.\n"
 
   subtype_work = create_request(RequestType.GET.name, entity_url["subtype_work"] + '/by-name', param={
     "name": "Пробоподготовка керновых проб"
@@ -116,7 +116,7 @@ def get_production_message(plot_id):
       "subtypeWorkId": subtype_work.get("id"),
     })
     message += f"Пробопод керновых проб:\n"
-    message += f"С начала проекта: {get_all_drilling(reports)}\n"
+    message += f"С начала проекта: {get_all_drilling(reports)} м."
   return message
 
 
