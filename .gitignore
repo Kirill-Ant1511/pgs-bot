@@ -11,3 +11,4 @@ env/
 test.py
 *.xlsx
 .idea
+transfer_db

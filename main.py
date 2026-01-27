@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 from app.confirm_handler import confirm_router
 from app.get_date_handler import get_date_router
 from app.get_report_handler import get_report_router
+from app.get_report_message import get_report_message_router
 from app.keyboards import main_menu, pm_menu
 from app.send_report_handler import send_report_router
 from app.skip_handler import skip_router
@@ -39,7 +40,7 @@ async def cancel_last_action(message: Message, state: FSMContext):
 
 
 async def main():
-  dp.include_routers(send_report_router, skip_router, get_date_router, confirm_router, get_report_router)
+  dp.include_routers(send_report_router, skip_router, get_date_router, confirm_router, get_report_router, get_report_message_router)
   await dp.start_polling(bot)
 
 if __name__ == "__main__":

@@ -19,3 +19,6 @@ class GetReportState(StatesGroup):
   plot = State()
   type_work = State()
   subtype_work = State()
+
+class GetReportMessage(StatesGroup):
+  plot = State()

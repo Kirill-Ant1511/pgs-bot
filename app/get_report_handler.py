@@ -4,6 +4,7 @@ from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery, FSInputFile
 import services.keyboard_builder as builder
+from app.get_report_message import get_message
 from app.keyboards import get_report_kb, filter_get_report_kb
 from constants import RequestType, entity_url
 from middleware.pm_middleware import PmMiddleware
@@ -25,6 +26,9 @@ async def get_reports(message: Message, state: FSMContext):
 
 @get_report_router.callback_query(GetReportState.report_type)
 async def get_report_type(callback: CallbackQuery, state: FSMContext):
+  if callback.data == "message_report":
+    await get_message(callback.message, state)
+    return
   await state.update_data(report_type=callback.data)
   await state.set_state(GetReportState.filters)
   await callback.message.edit_text("Выберите фильтр для получения отчётности: ", reply_markup=filter_get_report_kb)
