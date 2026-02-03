@@ -15,7 +15,6 @@ from app.get_report_message import get_report_message_router
 from app.keyboards import main_menu, pm_menu
 from app.send_report_handler import send_report_router
 from app.skip_handler import skip_router
-from app.test_handler import test_router
 from constants import RequestType, entity_url
 from services.api import create_request
 
