@@ -76,6 +76,7 @@ async def get_data_filter(message: Message, state: FSMContext):
     await state.update_data(type_work_id=type_work.get("id"))
 
   if data.get("first_filter") is None and data.get("second_filter") is None:
+    await message.answer("Производится выгрузка отчётов...")
     reports = create_request(
       RequestType.GET.name, entity_url["report"], param={
         "plotId": data.get("plot_id"),
@@ -159,7 +160,7 @@ async def get_plot_id(callback: CallbackQuery, state: FSMContext):
       })
     await state.update_data(type_work_id=type_work.get("id"), type_work_name=type_work.get("name"))
     await state.set_state(GetReportState.subtype_work)
-    subtype_works_kb = builder.planing_subtype_work(data.get("plot_id"), data.get("type_work_id"))
+    subtype_works_kb = builder.planing_subtype_work(data.get("plot_id"), type_work.get("id"))
     await callback.message.answer(f"Выбериет тип работы: ", reply_markup=subtype_works_kb)
   else:
     await state.set_state(GetReportState.type_work)
