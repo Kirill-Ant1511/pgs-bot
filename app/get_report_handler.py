@@ -26,6 +26,7 @@ async def get_reports(message: Message, state: FSMContext):
 
 @get_report_router.callback_query(GetReportState.report_type)
 async def get_report_type(callback: CallbackQuery, state: FSMContext):
+  await callback.answer()
   if callback.data == "message_report":
     await get_message(callback.message, state)
     return
@@ -35,6 +36,7 @@ async def get_report_type(callback: CallbackQuery, state: FSMContext):
 
 @get_report_router.callback_query(GetReportState.filters)
 async def init_filters(callback: CallbackQuery, state: FSMContext):
+  await callback.answer()
   await state.update_data(
     filter=callback.data,
     plan_id=None, plot_id=None,
@@ -141,6 +143,7 @@ async def get_plot(message: Message, state: FSMContext):
 
 @get_report_router.callback_query(GetReportState.plot)
 async def get_plot_id(callback: CallbackQuery, state: FSMContext):
+  await callback.answer()
   plot_id = callback.data
   await state.update_data(plot_id=plot_id)
   data = await state.get_data()
@@ -165,6 +168,7 @@ async def get_plot_id(callback: CallbackQuery, state: FSMContext):
 
 @get_report_router.callback_query(GetReportState.type_work)
 async def get_type_work(callback: CallbackQuery, state: FSMContext):
+  await callback.answer()
   type_work_id = callback.data
   await state.update_data(type_work_id=type_work_id)
   data = await state.get_data()
@@ -174,6 +178,7 @@ async def get_type_work(callback: CallbackQuery, state: FSMContext):
 
 @get_report_router.callback_query(GetReportState.subtype_work)
 async def get_subtype_work(callback: CallbackQuery, state: FSMContext):
+  await callback.answer()
   subtype_work_id = callback.data
   await state.update_data(subtype_work_id=subtype_work_id, first_filter=None)
   await get_data_filter(callback.message, state)

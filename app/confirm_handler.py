@@ -12,11 +12,13 @@ confirm_router = Router()
 
 @confirm_router.callback_query(F.data == "cancel")
 async def cancel_action(callback: CallbackQuery, state: FSMContext):
+  await callback.answer()
   await callback.message.edit_text("Отменено")
   await state.clear()
 
 @confirm_router.callback_query(F.data == "confirm")
 async def send_report(callback: CallbackQuery, state: FSMContext):
+  await callback.answer()
   data = await state.get_data()
   if "plan_id" not in data:
     plan = create_request(RequestType.GET.name, entity_url["plan"], param={

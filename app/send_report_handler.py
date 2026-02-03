@@ -32,6 +32,7 @@ async def send_report(message: Message, state: FSMContext):
 
 @send_report_router.callback_query(ReportState.plot)
 async def get_plot(callback: CallbackQuery, state: FSMContext):
+  await callback.answer()
   plot_id = callback.data
   plot = create_request(RequestType.GET.name, entity_url["plot"] + f"/{plot_id}")
   await callback.message.edit_text(f"Вы выбрали участок: {plot.get("name")}")
@@ -48,6 +49,7 @@ async def get_plot(callback: CallbackQuery, state: FSMContext):
 
 @send_report_router.callback_query(ReportState.type_work)
 async def get_type_work(callback: CallbackQuery, state: FSMContext):
+  await callback.answer()
   type_work_id = callback.data
   type_work = create_request(RequestType.GET.name, entity_url["type_work"] + f'/{type_work_id}')
   await callback.message.edit_text(f"Вы выбрали вид работы: {type_work.get("name")}")
@@ -60,6 +62,7 @@ async def get_type_work(callback: CallbackQuery, state: FSMContext):
 
 @send_report_router.callback_query(ReportState.subtype_work)
 async def get_subtype_work(callback: CallbackQuery, state: FSMContext):
+  await callback.answer()
   subtype_work_id = callback.data
   subtype_work = create_request(RequestType.GET.name, entity_url["subtype_work"] + f'/{subtype_work_id}')
   await callback.message.edit_text(f"Вы выбрали тип работы: {subtype_work.get("name")}")
@@ -79,6 +82,7 @@ async def get_subtype_work(callback: CallbackQuery, state: FSMContext):
 
 @send_report_router.callback_query(ReportState.production_name)
 async def get_production_name(callback: CallbackQuery, state: FSMContext):
+  await callback.answer()
   plan = create_request(RequestType.GET.name, entity_url["plan"] + f'/{callback.data}')
   await callback.message.edit_text(f"Вы выбрали выработку {plan.get("productionName")}")
   await state.update_data(plan_id=callback.data, production_name=plan.get("productionName"))

@@ -30,6 +30,7 @@ async def get_date_handler(message: Message, state: FSMContext):
 
 @get_date_router.callback_query(F.data == "today")
 async def get_today_date(callback: CallbackQuery, state: FSMContext):
+  await callback.answer()
   date = datetime.now()
   await callback.message.edit_text(f"Вы выбрали дату: {date.date()}")
   await state.update_data(date=date.date())
@@ -38,6 +39,7 @@ async def get_today_date(callback: CallbackQuery, state: FSMContext):
 
 @get_date_router.callback_query(F.data == "yesterday")
 async def get_yesterday_date(callback: CallbackQuery, state: FSMContext):
+  await callback.answer()
   date = datetime.now() - timedelta(days=1)
   await callback.message.edit_text(f"Вы выбрали дату: {date.date()}")
   await state.update_data(date=date.date())
