@@ -24,7 +24,8 @@ def get_last_drilling(reports):
   result = 0
   now = datetime.now()
   for report in reports:
-    if report.get("date") == now.date():
+    report_date = datetime.strptime(report.get("date"), "%Y-%m-%d")
+    if report_date.date() == now.date():
       result += report.get("fact")
   return result
 
