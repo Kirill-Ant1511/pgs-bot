@@ -120,7 +120,7 @@ async def get_start_date(message: Message, state: FSMContext):
     await message.answer("Введите конечную дату в формате yyyy-mm-dd(на 2025-12-31):")
   except Exception as e:
     print(e)
-    await message.answer("Некорректный формат даты. Ввежите дату в виде yyyy-mm-dd")
+    await message.answer("Некорректный формат даты. Введите дату в виде yyyy-mm-dd")
 
 @get_report_router.message(GetReportState.end_date)
 async def get_end_date(message: Message, state: FSMContext):
@@ -131,7 +131,7 @@ async def get_end_date(message: Message, state: FSMContext):
     await get_data_filter(message, state)
   except Exception as e:
     print(e)
-    await message.answer("Некорректный формат даты. Ввежите дату в виде yyyy-mm-dd")
+    await message.answer("Некорректный формат даты. Введите дату в виде yyyy-mm-dd")
 
 
 

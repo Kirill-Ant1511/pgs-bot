@@ -96,7 +96,7 @@ async def get_other_data(message: Message, state: FSMContext):
     await message.answer("Введите название станка: ")
   else:
     await state.set_state(ReportState.fact)
-    await message.answer(f"Ввежите факт проделанной работы в {data.get("unit_metering")}:")
+    await message.answer(f"Введите факт проделанной работы в {data.get("unit_metering")}:")
 
 @send_report_router.message(ReportState.machine)
 async def get_machine(message: Message, state: FSMContext):
@@ -116,7 +116,7 @@ async def get_fact(message: Message, state: FSMContext):
       await message.answer("Некорректный формат факта. Введите факт в виде числа")
   except Exception as e:
     print("Error: ", e)
-    await message.answer("Некорректный формат факта. Ввежите факт в виде числа")
+    await message.answer("Некорректный формат факта. Введите факт в виде числа")
 
 @send_report_router.message(ReportState.comment)
 async def get_comment(message: Message, state: FSMContext):
