@@ -5,19 +5,17 @@ from datetime import datetime
 
 def get_unique_machine(reports):
   machine = dict()
-  machine_and_production = dict()
   for report in reports:
     if report.get("machine") is None:
       continue
     machine[report.get("machine")] = []
-    machine_and_production[f"{report.get("machine")} - {report.get("plan").get("productionName")}"] = []
 
   for report in reports:
     if report.get("machine") is None:
       continue
     machine[report.get("machine")].append(report)
-    machine_and_production[f"{report.get("machine")} - {report.get("plan").get("productionName")}"].append(report)
-  return machine, machine_and_production
+
+  return machine
 
 
 def get_last_drilling(reports):
@@ -28,6 +26,18 @@ def get_last_drilling(reports):
     if report_date.date() == now.date():
       result += report.get("fact")
   return result
+
+
+def get_last_drilling_for_machine(reports):
+  result = 0
+  result_report_plan = None
+  now = datetime.now()
+  for report in reports:
+    report_date = datetime.strptime(report.get("date"), "%Y-%m-%d")
+    if report_date.date() == now.date():
+      result += report.get("fact")
+      result_report_plan = report.get("plan")
+  return result, result_report_plan
 
 def get_last_month_drilling(reports):
   result = 0
@@ -51,19 +61,14 @@ def get_production_message(plot_id):
     "plotId": plot_id,
     "typeWorkId": type_work.get("id"),
   })
-  machine, machine_and_production = get_unique_machine(reports)
+  machine = get_unique_machine(reports)
   for key, value in machine.items():
-    message += f"Буровая {key}\n"
+    last_drill, last_drill_plan = get_last_drilling_for_machine(value)
+    if last_drill != 0:
+      message += f"Буровая: {key}. Бурение {last_drill_plan.get("productionName")} - ({last_drill_plan.get("plot").get("name")}. Проектная глубина: {last_drill_plan.get("volume")}м)\n"
+    else:
+      message += f"Буровая {key}\n"
     message += f"За сутки: {get_last_drilling(value)} м.\n"
-    message += f"За месяц: {get_last_month_drilling(value)} м.\n"
-    message += f"С начала проекта: {get_all_drilling(value)} м.\n\n"
-
-  for key, value in machine_and_production.items():
-    last_drill = get_last_drilling(value)
-    if last_drill == 0:
-      continue
-    message += f"Буровая: {key} - ({value[0].get("plan").get("plot").get("name")}. Проектная глубина: {value[0].get("plan").get("volume")}м)\n"
-    message += f"За сутки: {last_drill} м.\n"
     message += f"За месяц: {get_last_month_drilling(value)} м.\n"
     message += f"С начала проекта: {get_all_drilling(value)} м.\n\n"
 
