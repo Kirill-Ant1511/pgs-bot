@@ -28,6 +28,14 @@ def get_last_drilling(reports):
   return result
 
 
+def all_drilling_by_production(reports, production_name):
+  result = 0
+  for report in reports:
+    if report.get("plan").get("productionName") == production_name:
+      result += report.get("fact")
+  return result
+
+
 def get_last_drilling_for_machine(reports):
   result = 0
   result_report_plan = None
@@ -65,7 +73,8 @@ def get_production_message(plot_id):
   for key, value in machine.items():
     last_drill, last_drill_plan = get_last_drilling_for_machine(value)
     if last_drill != 0:
-      message += f"Буровая: {key}. Бурение {last_drill_plan.get("productionName")} - ({last_drill_plan.get("plot").get("name")}. Проектная глубина: {last_drill_plan.get("volume")}м)\n"
+      all_drilling_production = all_drilling_by_production(value, last_drill_plan.get("productionName"))
+      message += f"Буровая: {key}. Бурение {last_drill_plan.get("productionName")} - ({last_drill_plan.get("plot").get("name")}. Проектная глубина: {last_drill_plan.get("volume")} м, факт - {all_drilling_production} м)\n"
     else:
       message += f"Буровая {key}\n"
     message += f"За сутки: {get_last_drilling(value)} м.\n"
