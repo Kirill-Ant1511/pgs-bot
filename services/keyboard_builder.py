@@ -37,7 +37,7 @@ def planing_subtype_work(plot_id, type_work_id):
 
 
 def planing_production_name(plot_id, type_work_id, subtype_work_id):
-  plans = create_request(RequestType.GET.name, entity_url["plan"], param={"plotId": int(plot_id), "typeWorkId": int(type_work_id), "subtypeWorkId": int(subtype_work_id)})
+  plans = create_request(RequestType.GET.name, entity_url["plan"], param={"plotId": int(plot_id), "typeWorkId": int(type_work_id), "subtypeWorkId": int(subtype_work_id), "isActive": True})
   keyboard = InlineKeyboardBuilder()
   flag = False
   for plan in plans:
