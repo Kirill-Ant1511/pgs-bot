@@ -3,11 +3,14 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 import services.keyboard_builder as builder
 from constants import RequestType, entity_url
+from middleware.pm_middleware import PmMiddleware
 from services.api import create_request
 from states.ReportState import GetReportMessage
 from utils.message import get_production_message
 
 get_report_message_router = Router()
+get_report_message_router.message.middleware(PmMiddleware())
+get_report_message_router.callback_query.middleware(PmMiddleware())
 
 
 async def get_message(message: Message, state: FSMContext):

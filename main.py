@@ -27,10 +27,13 @@ dp = Dispatcher()
 @dp.message(CommandStart())
 async def start(message: Message):
   project_managers = create_request(RequestType.GET.value, entity_url["project_manager"] + f"/{message.chat.id}")
+  print(project_managers)
   if project_managers is None:
-    await message.answer("Здравствуйте!", reply_markup=main_menu)
-  else:
-    await message.answer(f"Здравствуйте, {project_managers['name']}!", reply_markup=pm_menu)
+    await message.answer("Здравствуйте! Вы не зарегестрированы, попросите вас зарегестрировать перед использованием бота")
+  elif project_managers.get("role") == 'USER':
+    await message.answer(f"Здравствуйте, {project_managers.get("name")}!", reply_markup=main_menu)
+  elif project_managers.get("role") == 'PM':
+    await message.answer(f"Здравствуйте, {project_managers.get("name")}!", reply_markup=pm_menu)
 
 @dp.message(F.text == "Отменить последние действие")
 async def cancel_last_action(message: Message, state: FSMContext):

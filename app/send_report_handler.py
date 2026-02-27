@@ -5,10 +5,13 @@ import services.keyboard_builder as builder
 from app.get_date_handler import get_date
 from app.keyboards import confirm_kb, skip_kb
 from constants import entity_url, RequestType
+from middleware.user_middleware import UserMiddleware
 from services.api import create_request
 from states.ReportState import ReportState
 
 send_report_router = Router()
+send_report_router.message.middleware(UserMiddleware())
+send_report_router.callback_query.middleware(UserMiddleware())
 
 @send_report_router.message(F.text == "Отправить отчёт по выработкам")
 async def send_production_report(message: Message, state: FSMContext):

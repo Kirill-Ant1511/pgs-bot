@@ -4,7 +4,7 @@ from typing import Callable, Dict, Any, Awaitable
 from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject
 
-class PmMiddleware(BaseMiddleware):
+class UserMiddleware(BaseMiddleware):
   def __init__(self):
     super().__init__()
 
@@ -15,11 +15,11 @@ class PmMiddleware(BaseMiddleware):
     data: Dict[str, Any]
   ) -> Any:
     # Получение chat_id
-    project_manager = create_request(RequestType.GET.name, entity_url["project_manager"] + f'/{str(event.from_user.id)}')
-    if project_manager is None:
+    users = create_request(RequestType.GET.name, entity_url["project_manager"] + f'/{str(event.from_user.id)}')
+    if users is None:
       return None
     chat_id = None
-    print(project_manager)
+    role = users.get("role")
 
     if hasattr(event, 'chat') and event.chat:
       # Если chat есть
@@ -27,7 +27,8 @@ class PmMiddleware(BaseMiddleware):
     elif hasattr(event, 'message') and event.message and event.message.chat:
       # Если message есть
       chat_id = event.message.chat.id
-    if chat_id and project_manager.get("role") == 'PM':
-      # Если chat_id есть и пользователь админ
+    if chat_id and role == 'USER' or role == 'PM':
+      # Если chat_id есть и пользователь обычный пользователь
+      print(role)
       return await handler(event, data)
     return None
