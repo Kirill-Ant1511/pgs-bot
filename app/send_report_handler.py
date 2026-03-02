@@ -116,7 +116,12 @@ async def get_machine(message: Message, state: FSMContext):
 async def get_fact(message: Message, state: FSMContext):
   try:
     if float(message.text):
-      await state.update_data(fact=message.text, next_handler=confirm_report_data, who_send=message.from_user.username)
+      if message.from_user.username is None:
+        user = create_request(RequestType.GET.name, entity_url["user"] + f'/{message.from_user.id}')
+        who_send = user.get("name")
+      else:
+        who_send = message.from_user.username
+      await state.update_data(fact=message.text, next_handler=confirm_report_data, who_send=who_send)
       await state.set_state(ReportState.comment)
       await message.answer("Введите комментарий: ", reply_markup=skip_kb)
     else:
