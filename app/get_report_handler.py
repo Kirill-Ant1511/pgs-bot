@@ -20,6 +20,7 @@ get_report_router.message.middleware(PmMiddleware())
 
 @get_report_router.message(F.text == "Выгрузка отчётов")
 async def get_reports(message: Message, state: FSMContext):
+  await state.clear()
   await state.set_state(GetReportState.report_type)
   await message.answer("Какую отчётность вы хотите получить?", reply_markup=get_report_kb)
 

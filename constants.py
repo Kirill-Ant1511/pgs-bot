@@ -1,6 +1,6 @@
 from enum import Enum
 
-host = "http://localhost:8080"
+host = "http://80.64.24.25:8080"
 
 entity_url = {
   "project_manager": host + '/users',

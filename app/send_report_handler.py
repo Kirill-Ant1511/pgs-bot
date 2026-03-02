@@ -15,6 +15,7 @@ send_report_router.callback_query.middleware(UserMiddleware())
 
 @send_report_router.message(F.text == "Отправить отчёт по выработкам")
 async def send_production_report(message: Message, state: FSMContext):
+  await state.clear()
   type_work = create_request(RequestType.GET.name, entity_url["type_work"] + '/by-name', param={
     "name": "Горно-буровые работы"
   })
@@ -23,6 +24,9 @@ async def send_production_report(message: Message, state: FSMContext):
 
 @send_report_router.message(F.text == "Отправить отчёт")
 async def send_report(message: Message, state: FSMContext):
+    data = await state.get_data()
+    if "type_work_id" not in data:
+      await state.clear()
     await message.answer("Отправка отчёта")
     plots_kb = builder.planing_plot()
     if plots_kb is None:
