@@ -19,7 +19,6 @@ class PmMiddleware(BaseMiddleware):
     if project_manager is None:
       return None
     chat_id = None
-    print(project_manager)
 
     if hasattr(event, 'chat') and event.chat:
       # Если chat есть

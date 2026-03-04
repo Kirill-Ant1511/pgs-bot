@@ -29,6 +29,5 @@ class UserMiddleware(BaseMiddleware):
       chat_id = event.message.chat.id
     if chat_id and role == 'USER' or role == 'PM':
       # Если chat_id есть и пользователь обычный пользователь
-      print(role)
       return await handler(event, data)
     return None
