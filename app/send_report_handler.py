@@ -1,3 +1,4 @@
+import logging
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
@@ -126,6 +127,13 @@ async def get_fact(message: Message, state: FSMContext):
     await message.answer("Введите комментарий: ", reply_markup=skip_kb)
   except Exception as e:
     print(f"Error: {e}\nMessage - {message.text}")
+    # Настройка логирования
+    logging.basicConfig(
+      level=logging.INFO,
+      format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+    logger = logging.getLogger(__name__)
+    logger.error(f"Error: {e}\nString: {message.text}")
     await message.answer("Некорректный формат факта. Введите факт в виде числа")
 
 @send_report_router.message(ReportState.comment)
