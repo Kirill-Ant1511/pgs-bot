@@ -108,6 +108,8 @@ async def get_other_data(message: Message, state: FSMContext):
 
 @send_report_router.message(ReportState.machine)
 async def get_machine(message: Message, state: FSMContext):
+  logger = logging.getLogger(__name__)
+  logger.info(f"Machine message: {message.text}")
   await state.update_data(machine=message.text)
   await state.set_state(ReportState.fact)
   data = await state.get_data()
@@ -115,7 +117,9 @@ async def get_machine(message: Message, state: FSMContext):
 
 @send_report_router.message(ReportState.fact)
 async def get_fact(message: Message, state: FSMContext):
+  logger = logging.getLogger(__name__)
   try:
+    logger.info(f"Message fact: {message.text}")
     fact = float(message.text)
     if message.from_user.username is None:
       user = create_request(RequestType.GET.name, entity_url["user"] + f'/{message.from_user.id}')
@@ -126,18 +130,13 @@ async def get_fact(message: Message, state: FSMContext):
     await state.set_state(ReportState.comment)
     await message.answer("Введите комментарий: ", reply_markup=skip_kb)
   except Exception as e:
-    print(f"Error: {e}\nMessage - {message.text}")
-    # Настройка логирования
-    logging.basicConfig(
-      level=logging.INFO,
-      format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-    )
-    logger = logging.getLogger(__name__)
     logger.error(f"Error: {e}\nString: {message.text}")
     await message.answer("Некорректный формат факта. Введите факт в виде числа")
 
 @send_report_router.message(ReportState.comment)
 async def get_comment(message: Message, state: FSMContext):
+  logger = logging.getLogger(__name__)
+  logger.info(f"Message comment: {message.text}")
   await state.update_data(comment=message.text, next_handler=confirm_report_data)
   await confirm_report_data(message, state)
 

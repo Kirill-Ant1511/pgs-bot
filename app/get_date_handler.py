@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-
+import logging
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
@@ -17,14 +17,16 @@ async def get_date(message: Message, state: FSMContext):
 
 @get_date_router.message(ReportState.date)
 async def get_date_handler(message: Message, state: FSMContext):
+  logger = logging.getLogger(__name__)
   try:
+    logger.info(f"Message date: {message.text}")
     date = datetime.strptime(message.text, "%Y-%m-%d")
     await state.update_data(date=date.date())
     data = await state.get_data()
     await message.answer(f"Вы ввели дату: {date.date()}")
     await  data.get("next_handler")(message, state)
   except Exception as e:
-    print("Time convert error: ", e)
+    logger.error(f"Message date: {message.text}\nError: {e}")
     await message.answer("Некорректный формат даты. Введите дату в формате yyyy-mm-dd(например 2025-12-31)")
 
 
