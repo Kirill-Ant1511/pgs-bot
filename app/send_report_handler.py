@@ -122,10 +122,12 @@ async def get_fact(message: Message, state: FSMContext):
     logger.info(f"Message fact: {message.text}")
     fact = float(message.text)
     if message.from_user.username is None:
-      user = create_request(RequestType.GET.name, entity_url["user"] + f'/{message.from_user.id}')
+      user = create_request(RequestType.GET.name, entity_url["project_manager"] + f'/{message.from_user.id}')
+      logger.info(f"User: {user}")
       who_send = user.get("name")
     else:
       who_send = message.from_user.username
+    logger.info(f"Who_send: {who_send}")
     await state.update_data(fact=fact, next_handler=confirm_report_data, who_send=who_send)
     await state.set_state(ReportState.comment)
     await message.answer("Введите комментарий: ", reply_markup=skip_kb)
