@@ -29,9 +29,9 @@ async def send_report(message: Message, state: FSMContext):
     if "type_work_id" not in data:
       await state.clear()
     await message.answer("Отправка отчёта")
-    plots_kb = builder.planing_plot()
+    plots_kb = builder.planing_plot(message.from_user.id)
     if plots_kb is None:
-      await message.answer("Планы отсутвуют, попробуйте позже")
+      await message.answer("Вы не привязаны ни к одному из участков. Или планов по вашему участку ещё нету.")
       return
     await state.set_state(ReportState.plot)
     await message.answer("Выберите участок", reply_markup=plots_kb)

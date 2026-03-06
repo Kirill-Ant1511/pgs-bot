@@ -15,7 +15,10 @@ get_report_message_router.callback_query.middleware(PmMiddleware())
 
 async def get_message(message: Message, state: FSMContext):
   await state.set_state(GetReportMessage.plot)
-  plots_kb = builder.planing_plot()
+  plots_kb = builder.planing_plot(message.from_user.id)
+  if plots_kb is None:
+    await message.answer("Вы не привязаны ни к одному из участков. Или планов по вашему участку ещё нету.")
+    return
   await message.answer("Выберите участок: ", reply_markup=plots_kb)
 
 @get_report_message_router.callback_query(GetReportMessage.plot)

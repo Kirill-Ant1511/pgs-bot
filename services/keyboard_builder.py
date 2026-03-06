@@ -1,16 +1,29 @@
-from aiogram.types import InlineKeyboardButton
+from aiogram.types import InlineKeyboardButton, Message
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-
+import logging
 from constants import RequestType, entity_url
 from services.api import create_request
 
+logger = logging.getLogger(__name__)
 
-def planing_plot():
+def planing_plot(user_id):
   plots = create_request(RequestType.GET.name, entity_url["plot"] + '/planing')
-  keyboard = InlineKeyboardBuilder()
   if plots is None:
+    logger.info("Plans absent")
     return None
-  for plot in plots:
+  user = create_request(RequestType.GET.name, entity_url["project_manager"] + f'/{user_id}')
+  if user is None or user.get("plots") == [] or user.get("plots") is None:
+    logger.info(f"User {user_id} has no plots")
+    return None
+  plot_ids = {item['id'] for item in user.get("plots")}
+  user_plots = [item for item in plots if item['id'] in plot_ids]
+  if user_plots == [] or user_plots is None:
+    logger.info(f"User {user_id} has no plots")
+    return None
+  keyboard = InlineKeyboardBuilder()
+  if user_plots is None:
+    return None
+  for plot in user_plots:
     keyboard.add(InlineKeyboardButton(text=f"{plot.get("name")}", callback_data=f"{plot.get("id")}"))
   keyboard.adjust(1)
   return keyboard.as_markup()
