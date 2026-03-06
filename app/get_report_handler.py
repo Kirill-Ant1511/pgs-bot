@@ -29,7 +29,7 @@ async def get_reports(message: Message, state: FSMContext):
 async def get_report_type(callback: CallbackQuery, state: FSMContext):
   await callback.answer()
   if callback.data == "message_report":
-    await get_message(callback.message, state)
+    await get_message(callback.message, state, callback.from_user.id)
     return
   await state.update_data(report_type=callback.data)
   await state.set_state(GetReportState.filters)
@@ -46,7 +46,8 @@ async def init_filters(callback: CallbackQuery, state: FSMContext):
     start_date=None,
     end_date=None,
     first_filter=None,
-    second_filter=None
+    second_filter=None,
+    user_id=callback.from_user.id
   )
   if callback.data == "by_date":
     await state.update_data(first_filter=None, second_filter="date")
@@ -64,7 +65,7 @@ async def init_filters(callback: CallbackQuery, state: FSMContext):
 async def get_data_filter(message: Message, state: FSMContext):
   data = await state.get_data()
   if data.get("first_filter") == "plan" or data.get("first_filter") == "plot":
-    await get_plot(message, state)
+    await get_plot(message, state, data.get("user_id"))
     return
   elif data.get("second_filter") == "date":
     await get_date_by_reports(message, state)
@@ -138,9 +139,9 @@ async def get_end_date(message: Message, state: FSMContext):
 
 
 # Получение участка и плана
-async def get_plot(message: Message, state: FSMContext):
+async def get_plot(message: Message, state: FSMContext, user_id: int):
   await state.set_state(GetReportState.plot)
-  plots_kb = builder.planing_plot(message.from_user.id)
+  plots_kb = builder.planing_plot(user_id)
   if plots_kb is None:
     await message.answer("Вы не привязаны ни к одному из участков. Или планов по вашему участку ещё нету.")
     return
