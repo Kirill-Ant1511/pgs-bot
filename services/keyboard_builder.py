@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 
 def planing_plot(user_id):
   plots = create_request(RequestType.GET.name, entity_url["plot"] + '/planing')
+  plots.sort(key=lambda x: x.get("name"))
   if plots is None:
     logger.info("Plans absent")
     return None
@@ -30,6 +31,7 @@ def planing_plot(user_id):
 
 def planing_type_work(plot_id):
   type_works = create_request(RequestType.GET.name, entity_url["type_work"] + '/planing', param={"plotId": str(plot_id)})
+  type_works.sort(key=lambda x: x.get("name"))
   keyboard = InlineKeyboardBuilder()
   if type_works is None:
     return None
@@ -40,6 +42,7 @@ def planing_type_work(plot_id):
 
 def planing_subtype_work(plot_id, type_work_id):
   subtype_works = create_request(RequestType.GET.name, entity_url["subtype_work"] + '/planing', param={"plotId": str(plot_id), "typeWorkId": str(type_work_id)})
+  subtype_works.sort(key=lambda x: x.get("name"))
   keyboard = InlineKeyboardBuilder()
   if subtype_works is None:
     return None
@@ -51,6 +54,7 @@ def planing_subtype_work(plot_id, type_work_id):
 
 def planing_production_name(plot_id, type_work_id, subtype_work_id):
   plans = create_request(RequestType.GET.name, entity_url["plan"], param={"plotId": int(plot_id), "typeWorkId": int(type_work_id), "subtypeWorkId": int(subtype_work_id), "isActive": True})
+  plans.sort(key=lambda x: x.get("productionName"))
   keyboard = InlineKeyboardBuilder()
   flag = False
   for plan in plans:

@@ -1,7 +1,9 @@
 import logging
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, InlineKeyboardButton
+from aiogram.utils.keyboard import InlineKeyboardBuilder
+
 import services.keyboard_builder as builder
 from app.get_date_handler import get_date
 from app.keyboards import confirm_kb, skip_kb
@@ -100,11 +102,36 @@ async def get_production_name(callback: CallbackQuery, state: FSMContext):
 async def get_other_data(message: Message, state: FSMContext):
   data = await state.get_data()
   if data.get("type_work_name") == "Горно-буровые работы":
+    if "production_name" in data:
+      production_name = data.get("production_name")
+    else:
+      production_name = ""
+    plan = create_request(
+      RequestType.GET.name, entity_url["plan"], param={
+        "plotId": str(data.get("plot_id")),
+        "typeWorkId": str(data.get("type_work_id")),
+        "subtypeWorkId": str(data.get("subtype_work_id")),
+        "productionName": production_name
+      }
+    )
+    machines_kb = InlineKeyboardBuilder()
+    for machine in plan[0].get("machines"):
+      machines_kb.add(InlineKeyboardButton(text=machine.get("name"), callback_data=str(machine.get("id"))))
     await state.set_state(ReportState.machine)
-    await message.answer("Введите название станка: ")
+    await message.answer("Выберите станок (если станка нет в списке, введите его название вручную):", reply_markup=machines_kb.as_markup())
   else:
     await state.set_state(ReportState.fact)
     await message.answer(f"Введите факт проделанной работы в {data.get("unit_metering")}:")
+
+@send_report_router.callback_query(ReportState.machine)
+async def get_machine(callback: CallbackQuery, state: FSMContext):
+  logger = logging.getLogger(__name__)
+  machine = create_request(RequestType.GET.name, entity_url["machine"] + f'/{callback.data}')
+  logger.info(f"Machine callback: {callback.data}, Machine - {machine}")
+  await state.update_data(machine=machine.get("name"))
+  await state.set_state(ReportState.fact)
+  data = await state.get_data()
+  await callback.message.answer(f"Введите факт проделанной работы в {data.get("unit_metering")}:")
 
 @send_report_router.message(ReportState.machine)
 async def get_machine(message: Message, state: FSMContext):

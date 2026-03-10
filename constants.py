@@ -9,6 +9,7 @@ entity_url = {
   "type_work": host + '/type-work',
   "subtype_work": host + '/subtype-work',
   "plan": host + "/plan",
+  "machine": host + "/machine",
 }
 
 class RequestType(Enum):
