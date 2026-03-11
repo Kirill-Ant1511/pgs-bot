@@ -1,6 +1,6 @@
 from constants import RequestType, entity_url
 from services.api import create_request
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 def get_unique_machine(reports):
@@ -20,7 +20,7 @@ def get_unique_machine(reports):
 
 def get_last_drilling(reports):
   result = 0
-  now = datetime.now()
+  now = datetime.now() - timedelta(days=1)
   for report in reports:
     report_date = datetime.strptime(report.get("date"), "%Y-%m-%d")
     if report_date.date() == now.date():
@@ -39,7 +39,7 @@ def all_drilling_by_production(reports, production_name):
 def get_last_drilling_for_machine(reports):
   result = 0
   result_report_plan = None
-  now = datetime.now()
+  now = datetime.now() - timedelta(days=1)
   for report in reports:
     report_date = datetime.strptime(report.get("date"), "%Y-%m-%d")
     if report_date.date() == now.date():
@@ -60,14 +60,15 @@ def get_all_drilling(reports):
   return sum([report.get("fact") for report in reports])
 
 def get_production_message(plot_id):
-  now = datetime.now()
+  now = datetime.now() - timedelta(days=1)
   message = f"{now.date()}\n\n"
   type_work = create_request(RequestType.GET.name, entity_url["type_work"] + '/by-name', param={
-    "name": "Горно-буровые работы"
+    "name": "Горно-буровые работы",
   })
   reports = create_request(RequestType.GET.name, entity_url["report"], param={
     "plotId": plot_id,
     "typeWorkId": type_work.get("id"),
+    "endDate": now.strftime("%Y-%m-%d"),
   })
   machine = get_unique_machine(reports)
   for key, value in machine.items():
@@ -93,6 +94,7 @@ def get_production_message(plot_id):
     reports = create_request(RequestType.GET.name, entity_url["report"], param={
       "plotId": plot_id,
       "subtypeWorkId": subtype_work.get("id"),
+      "endDate": now.strftime("%Y-%m-%d")
     })
 
     message += f"Документация керна:\n"
@@ -107,6 +109,7 @@ def get_production_message(plot_id):
     reports = create_request(RequestType.GET.name, entity_url["report"], param={
         "plotId": plot_id,
         "subtypeWorkId": subtype_work.get("id"),
+        "endDate": now.strftime("%Y-%m-%d")
     })
     message += f"Распиловка керновых проб:\n"
     message += f"С начала проекта: {get_all_drilling(reports)} м.\n"
@@ -118,6 +121,7 @@ def get_production_message(plot_id):
     reports = create_request(RequestType.GET.name, entity_url["report"], param={
       "plotId": plot_id,
       "subtypeWorkId": subtype_work.get("id"),
+      "endDate": now.strftime("%Y-%m-%d")
     })
     message += f"Отбор керновых проб:\n"
     message += f"С начала проекта: {get_all_drilling(reports)} м.\n"
@@ -129,6 +133,7 @@ def get_production_message(plot_id):
     reports = create_request(RequestType.GET.name, entity_url["report"], param={
       "plotId": plot_id,
       "subtypeWorkId": subtype_work.get("id"),
+      "endDate": now.strftime("%Y-%m-%d")
     })
     message += f"Пробопод керновых проб:\n"
     message += f"С начала проекта: {get_all_drilling(reports)} м."
