@@ -114,9 +114,11 @@ async def get_other_data(message: Message, state: FSMContext):
         "productionName": production_name
       }
     )
+    plan[0].get("machines").sort(key=lambda x: x.get("name"))
     machines_kb = InlineKeyboardBuilder()
     for machine in plan[0].get("machines"):
       machines_kb.add(InlineKeyboardButton(text=machine.get("name"), callback_data=str(machine.get("id"))))
+    machines_kb.adjust(1)
     await state.set_state(ReportState.machine)
     await message.answer("Выберите станок (если станка нет в списке, введите его название вручную):", reply_markup=machines_kb.as_markup())
   else:
