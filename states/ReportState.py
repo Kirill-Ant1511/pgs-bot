@@ -22,3 +22,4 @@ class GetReportState(StatesGroup):
 
 class GetReportMessage(StatesGroup):
   plot = State()
+  date = State()
