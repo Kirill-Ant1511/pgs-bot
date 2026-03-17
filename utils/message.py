@@ -17,6 +17,16 @@ def get_unique_machine(reports):
 
   return machine
 
+def get_current_date_comment(reports, current_date: datetime):
+  if not reports:
+    return None
+  reports.sort(key=lambda x: x.get("date"))
+  current_drill = reports[-1]
+  current_drill_date = datetime.strptime(current_drill.get("date"), "%Y-%m-%d")
+  if reports != [] and current_drill.get("comment") is not None and current_drill_date.date() == current_date.date():
+    return f"Комментарий: {reports[-1].get("comment")}\n\n"
+  else:
+    return None
 
 def get_last_drilling(reports, current_date: datetime):
   result = 0
@@ -76,7 +86,12 @@ def get_production_message(plot_id, current_date: datetime):
       message += f"Буровая {key}\n"
     message += f"За сутки: {get_last_drilling(value, current_date)} м.\n"
     message += f"За месяц: {get_last_month_drilling(value, current_date)} м.\n"
-    message += f"С начала проекта: {get_all_drilling(value)} м.\n\n"
+    message += f"С начала проекта: {get_all_drilling(value)} м.\n"
+    comment = get_current_date_comment(reports, current_date)
+    if comment is None:
+      message += "\n"
+    else:
+      message += comment
 
   message += "Всего:\n"
   message += f"За сутки: {get_last_drilling(reports, current_date)} м.\n"
@@ -92,12 +107,16 @@ def get_production_message(plot_id, current_date: datetime):
       "subtypeWorkId": subtype_work.get("id"),
       "endDate": current_date.strftime("%Y-%m-%d")
     })
-
+    reports.sort(key=lambda x: x.get("date"))
     message += f"Документация керна:\n"
     message  += f"За сутки: {get_last_drilling(reports, current_date)} м.\n"
     message += f"За месяц: {get_last_month_drilling(reports, current_date)} м.\n"
-    message += f"С начала проекта: {get_all_drilling(reports)} м.\n\n"
-
+    message += f"С начала проекта: {get_all_drilling(reports)} м.\n"
+    comment = get_current_date_comment(reports, current_date)
+    if comment is None:
+      message += "\n"
+    else:
+      message += comment
   subtype_work = create_request(RequestType.GET.name, entity_url["subtype_work"] + '/by-name', param={
       "name": "Распиловка керновых проб"
   })
@@ -107,9 +126,14 @@ def get_production_message(plot_id, current_date: datetime):
         "subtypeWorkId": subtype_work.get("id"),
         "endDate": current_date.strftime("%Y-%m-%d")
     })
+    reports.sort(key=lambda x: x.get("date"))
     message += f"Распиловка керновых проб:\n"
     message += f"С начала проекта: {get_all_drilling(reports)} м.\n"
-
+    comment = get_current_date_comment(reports, current_date)
+    if comment is not None:
+      message += comment
+    else:
+      message += "\n"
   subtype_work = create_request(RequestType.GET.name, entity_url["subtype_work"] + '/by-name', param={
     "name": "Отбор керновых проб"
   })
@@ -119,9 +143,14 @@ def get_production_message(plot_id, current_date: datetime):
       "subtypeWorkId": subtype_work.get("id"),
       "endDate": current_date.strftime("%Y-%m-%d")
     })
+    reports.sort(key=lambda x: x.get("date"))
     message += f"Отбор керновых проб:\n"
     message += f"С начала проекта: {get_all_drilling(reports)} м.\n"
-
+    comment = get_current_date_comment(reports, current_date)
+    if comment is not None:
+      message += comment
+    else:
+      message += "\n"
   subtype_work = create_request(RequestType.GET.name, entity_url["subtype_work"] + '/by-name', param={
     "name": "Пробоподготовка керновых проб"
   })
@@ -131,8 +160,12 @@ def get_production_message(plot_id, current_date: datetime):
       "subtypeWorkId": subtype_work.get("id"),
       "endDate": current_date.strftime("%Y-%m-%d")
     })
+    reports.sort(key=lambda x: x.get("date"))
     message += f"Пробопод керновых проб:\n"
-    message += f"С начала проекта: {get_all_drilling(reports)} м."
+    message += f"С начала проекта: {get_all_drilling(reports)} м.\n"
+    comment = get_current_date_comment(reports, current_date)
+    if comment is not None:
+      message += comment
   return message
 
 
