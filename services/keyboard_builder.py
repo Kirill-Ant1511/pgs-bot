@@ -6,7 +6,7 @@ from services.api import create_request
 
 logger = logging.getLogger(__name__)
 
-def planing_plot(user_id):
+def planing_plot(user_id, is_production=False):
   plots = create_request(RequestType.GET.name, entity_url["plot"] + '/planing')
   plots.sort(key=lambda x: x.get("name"))
   if plots is None:
@@ -29,14 +29,19 @@ def planing_plot(user_id):
   keyboard.adjust(1)
   return keyboard.as_markup()
 
-def planing_type_work(plot_id):
+def planing_type_work(plot_id, is_production=False):
   type_works = create_request(RequestType.GET.name, entity_url["type_work"] + '/planing', param={"plotId": str(plot_id)})
   type_works.sort(key=lambda x: x.get("name"))
   keyboard = InlineKeyboardBuilder()
   if type_works is None:
     return None
   for type_work in type_works:
+    if not is_production:
+      if type_work.get("code") == "BHBUR":
+        continue
     keyboard.add(InlineKeyboardButton(text=f"{type_work.get('name')}", callback_data=f"{type_work.get('id')}"))
+  if len(list(keyboard.buttons)) == 0:
+    return None
   keyboard.adjust(1)
   return keyboard.as_markup()
 

@@ -55,6 +55,10 @@ async def get_plot(callback: CallbackQuery, state: FSMContext):
   else:
     await state.set_state(ReportState.type_work)
     type_works_kb = builder.planing_type_work(plot_id)
+    if type_works_kb is None:
+      await callback.message.answer("Работы по вашему участку не запланированы, попробуйте позже")
+      await state.clear()
+      return
     await callback.message.answer(f"Выберите вид работ", reply_markup=type_works_kb)
 
 @send_report_router.callback_query(ReportState.type_work)

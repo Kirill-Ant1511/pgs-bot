@@ -161,7 +161,7 @@ def get_production_message(plot_id, current_date: datetime):
       "endDate": current_date.strftime("%Y-%m-%d")
     })
     reports.sort(key=lambda x: x.get("date"))
-    message += f"Пробопод керновых проб:\n"
+    message += f"Пробоподготовка керновых проб:\n"
     message += f"С начала проекта: {get_all_drilling(reports)} м.\n"
     comment = get_current_date_comment(reports, current_date)
     if comment is not None:
