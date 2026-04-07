@@ -8,10 +8,10 @@ logger = logging.getLogger(__name__)
 
 def planing_plot(user_id, is_production=False):
   plots = create_request(RequestType.GET.name, entity_url["plot"] + '/planing')
-  plots.sort(key=lambda x: x.get("name"))
   if plots is None:
     logger.info("Plans absent")
     return None
+  plots.sort(key=lambda x: x.get("name"))
   user = create_request(RequestType.GET.name, entity_url["project_manager"] + f'/{user_id}')
   if user is None or user.get("plots") == [] or user.get("plots") is None:
     logger.info(f"User {user_id} has no plots")

@@ -36,7 +36,7 @@ def get_current_date_comment_and_prod_name(reports, current_date: datetime, prod
   current_drill_date = datetime.strptime(current_drill.get("date"), "%Y-%m-%d")
   for report in reports:
     drill_date = datetime.strptime(report.get("date"), "%Y-%m-%d")
-    if drill_date.date() == current_date.date() and report.get("plan").get("productionName") == production_name:
+    if drill_date.date() == current_date.date() and report.get("plan").get("productionName") == production_name and report.get("comment") is not None:
       return f"Комментарий: {report.get("comment")}\n\n"
   return None
 
@@ -79,7 +79,7 @@ def get_all_drilling(reports):
   return sum([report.get("fact") for report in reports])
 
 def get_production_message(plot_id, current_date: datetime):
-  # current_date = datetime(2026, 3, 25) # это удалить
+  # current_date = datetime(2026, 4, 5) # это удалить
   message = f"{current_date.date()}\n\n"
   type_work = create_request(RequestType.GET.name, entity_url["type_work"] + '/by-name', param={
     "name": "Горно-буровые работы",
@@ -89,23 +89,26 @@ def get_production_message(plot_id, current_date: datetime):
     "typeWorkId": type_work.get("id"),
     "endDate": current_date.strftime("%Y-%m-%d"),
   })
+  reports.sort(key=lambda x: x.get("plan").get("productionName"))
   machine = get_unique_machine(reports)
   for key, value in machine.items():
     last_drill, last_drill_plan = get_last_drilling_for_machine(value, current_date)
-    for drill in last_drill_plan:
+    for index, drill in enumerate(last_drill_plan):
       if last_drill != 0:
-        all_drilling_production = all_drilling_by_production(value, drill.get("productionName"))
+        all_drilling_production = all_drilling_by_production(reports, drill.get("productionName"))
         message += f"Буровая: {key}. Бурение {drill.get("productionName")} - ({drill.get("plot").get("name")}. Проектная глубина: {drill.get("volume"):.2f} м, факт - {all_drilling_production:.2f} м)\n"
       else:
         message += f"Буровая {key}\n"
-      message += f"За сутки: {get_last_drilling(value, current_date):.2f} м.\n"
-      message += f"За месяц: {get_last_month_drilling(value, current_date):.2f} м.\n"
-      message += f"С начала проекта: {get_all_drilling(value):.2f} м.\n"
       comment = get_current_date_comment_and_prod_name(reports, current_date, drill.get("productionName"))
       if comment is None:
         message += "\n"
       else:
         message += comment
+      if index == len(last_drill_plan) - 1:
+        message += f"За сутки: {get_last_drilling(value, current_date):.2f} м.\n"
+        message += f"За месяц: {get_last_month_drilling(value, current_date):.2f} м.\n"
+        message += f"С начала проекта: {get_all_drilling(value):.2f} м.\n\n"
+
 
   message += "Всего:\n"
   message += f"За сутки: {get_last_drilling(reports, current_date):.2f} м.\n"
@@ -181,10 +184,3 @@ def get_production_message(plot_id, current_date: datetime):
     if comment is not None:
       message += comment
   return message
-
-
-
-
-
-
-
