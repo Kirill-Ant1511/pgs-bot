@@ -3,6 +3,7 @@ import os
 import logging
 
 from aiogram import Bot, Dispatcher, F
+from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
@@ -20,8 +21,8 @@ from services.api import create_request
 
 load_dotenv()
 
-
-bot = Bot(os.getenv("BOT_TOKEN"))
+session = AiohttpSession(proxy="socks5://pgs_user:pgs_pass@185.192.23.116:1080")
+bot = Bot(os.getenv("BOT_TOKEN"), session=session)
 dp = Dispatcher()
 
 @dp.message(CommandStart())
