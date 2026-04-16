@@ -1,6 +1,11 @@
+from operator import attrgetter
+
 from aiogram.types import InlineKeyboardButton, Message
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 import logging
+
+from natsort import natsorted, ns
+
 from constants import RequestType, entity_url
 from services.api import create_request
 
@@ -59,13 +64,13 @@ def planing_subtype_work(plot_id, type_work_id):
 
 def planing_production_name(plot_id, type_work_id, subtype_work_id):
   plans = create_request(RequestType.GET.name, entity_url["plan"], param={"plotId": int(plot_id), "typeWorkId": int(type_work_id), "subtypeWorkId": int(subtype_work_id), "isActive": True})
-  plans.sort(key=lambda x: x.get("productionName"))
   keyboard = InlineKeyboardBuilder()
   flag = False
   for plan in plans:
     if plan.get("productionName") != "":
       flag = True
       break
+  plans = natsorted(plans, key=lambda x: x["productionName"], alg=ns.IGNORECASE)
   if not flag:
     return None
   if plans is None:

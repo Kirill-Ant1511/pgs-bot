@@ -1,3 +1,5 @@
+from natsort import natsorted
+
 from constants import RequestType, entity_url
 from services.api import create_request
 from datetime import datetime, timedelta
@@ -15,7 +17,7 @@ def get_unique_machine(reports):
       continue
     machine[report.get("machine")].append(report)
 
-  return machine
+  return dict(natsorted(machine.items(), key=lambda x: x[0]))
 
 def get_current_date_comment(reports, current_date: datetime):
   if not reports:
@@ -89,7 +91,6 @@ def get_production_message(plot_id, current_date: datetime):
     "typeWorkId": type_work.get("id"),
     "endDate": current_date.strftime("%Y-%m-%d"),
   })
-  reports.sort(key=lambda x: x.get("plan").get("productionName"))
   machine = get_unique_machine(reports)
   for key, value in machine.items():
     last_drill, last_drill_plan = get_last_drilling_for_machine(value, current_date)
